@@ -1,0 +1,14 @@
+/ip firewall mangle
+add action=accept chain=prerouting dst-address-list=ip src-address-list=ip
+add action=accept chain=postrouting dst-address-list=ip src-address-list=ip
+add action=accept chain=forward dst-address-list=ip src-address-list=ip
+add action=accept chain=input dst-address-list=ip src-address-list=ip
+add action=accept chain=output dst-address-list=ip src-address-list=ip
+add action=mark-connection chain=input in-interface="1. WAN" new-connection-mark="cm-1. WAN" passthrough=yes
+add action=mark-connection chain=input in-interface="4. WAN" new-connection-mark="cm-4. WAN" passthrough=yes
+add action=mark-routing chain=output connection-mark="cm-1. WAN" new-routing-mark="to-1. WAN" passthrough=yes
+add action=mark-routing chain=output connection-mark="cm-4. WAN" new-routing-mark="to-4. WAN" passthrough=yes
+add action=mark-connection chain=prerouting dst-address-type=!local new-connection-mark="cm-1. WAN" passthrough=yes per-connection-classifier=both-addresses-and-ports:2/0 dst-address-list=!ip src-address-list=ip
+add action=mark-connection chain=prerouting dst-address-type=!local new-connection-mark="cm-4. WAN" passthrough=yes per-connection-classifier=both-addresses-and-ports:2/1 dst-address-list=!ip src-address-list=ip
+add action=mark-routing chain=prerouting connection-mark="cm-1. WAN" new-routing-mark="to-1. WAN" passthrough=yes dst-address-list=!ip src-address-list=ip
+add action=mark-routing chain=prerouting connection-mark="cm-4. WAN" new-routing-mark="to-4. WAN" passthrough=yes dst-address-list=!ip src-address-list=ip
